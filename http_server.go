@@ -62,7 +62,11 @@ func (h *HTTPServer) handleInfoRefs(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	h.git.Refs(path, service, w)
+	err := h.git.Refs(path, service, w)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 }
 
 func (h *HTTPServer) handleReceivePack(w http.ResponseWriter, r *http.Request) {
