@@ -1,7 +1,6 @@
 package gogit
 
 import (
-	"compress/gzip"
 	"fmt"
 	"io"
 	"net/http"
@@ -86,16 +85,20 @@ func (g *Git) RPCWithWriter(path, service string, w http.ResponseWriter, r *http
 }
 
 func (g *Git) rpc(path, service string, w *http.ResponseWriter, r *http.Request) error {
-	var body io.ReadCloser
-	var err error
-	if r.Header.Get(goconst.HTTP_HEADER_CONTENT_ENCODING) == goconst.HTTP_HEADER_CONTENT_ENCODING_GZIP {
-		body, err = gzip.NewReader(r.Body)
-		if err != nil {
-			return err
-		}
-		defer body.Close()
-	} else {
-		body = r.Body
+	// var body io.ReadCloser
+	// var err error
+	// if r.Header.Get(goconst.HTTP_HEADER_CONTENT_ENCODING) == goconst.HTTP_HEADER_CONTENT_ENCODING_GZIP {
+	// 	body, err = gzip.NewReader(r.Body)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	defer body.Close()
+	// } else {
+	// 	body = r.Body
+	// }
+	body, err := getReadCloser(r)
+	if err != nil {
+		return err
 	}
 	repositoryDirectoryPath := filepath.Join(
 		g.RootDirectoryPath,
