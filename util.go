@@ -1,8 +1,13 @@
 package gogit
 
 import (
+	"compress/gzip"
+	"io"
+	"net/http"
 	"os/exec"
 	"syscall"
+
+	"github.com/sk409/goconst"
 )
 
 func gitCommand(repositoryPath string, gitBinPath string, args ...string) *exec.Cmd {
@@ -20,4 +25,19 @@ func cleanUpProcessGroup(cmd *exec.Cmd) {
 		syscall.Kill(-process.Pid, syscall.SIGTERM)
 	}
 	cmd.Wait()
+}
+
+func getReadCloser(r *http.Request) (io.ReadCloser, error) {
+	var body io.ReadCloser
+	var err error
+	if r.Header.Get(goconst.HTTP_HEADER_CONTENT_ENCODING) == goconst.HTTP_HEADER_CONTENT_ENCODING_GZIP {
+		body, err = gzip.NewReader(r.Body)
+		if err != nil {
+			return nil, err
+		}
+		defer body.Close()
+	} else {
+		body = r.Body
+	}
+	return body, nil
 }

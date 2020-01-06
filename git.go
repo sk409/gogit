@@ -117,14 +117,17 @@ func (g *Git) RPC(path, service string, w http.ResponseWriter, r *http.Request) 
 		return err
 	}
 	stdin.Close()
+
 	w.Header().Set(goconst.HTTP_HEADER_CONTENT_TYPE, fmt.Sprintf("application/x-git-%s-result", service))
 	bufferOut := bufferPool.Get().([]byte)
 	defer bufferPool.Put(bufferOut)
 	if _, err := io.CopyBuffer(w, stdout, bufferOut); err != nil {
 		return err
 	}
+
 	if err = command.Wait(); err != nil {
 		return err
 	}
+
 	return nil
 }
