@@ -77,7 +77,15 @@ func (g *Git) Refs(path, service string, w http.ResponseWriter) error {
 	return nil
 }
 
-func (g *Git) RPC(path, service string, w http.ResponseWriter, r *http.Request) error {
+func (g *Git) RPC(path, service string, r *http.Request) error {
+	return g.rpc(path, service, nil, r)
+}
+
+func (g *Git) RPCWithWriter(path, service string, w http.ResponseWriter, r *http.Request) error {
+	return g.rpc(path, service, &w, r)
+}
+
+func (g *Git) rpc(path, service string, w *http.ResponseWriter, r *http.Request) error {
 	var body io.ReadCloser
 	var err error
 	if r.Header.Get(goconst.HTTP_HEADER_CONTENT_ENCODING) == goconst.HTTP_HEADER_CONTENT_ENCODING_GZIP {
@@ -98,7 +106,6 @@ func (g *Git) RPC(path, service string, w http.ResponseWriter, r *http.Request) 
 	defer cleanUpProcessGroup(command)
 	stdin, err := command.StdinPipe()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
 		return err
 	}
 	defer stdin.Close()
@@ -118,11 +125,13 @@ func (g *Git) RPC(path, service string, w http.ResponseWriter, r *http.Request) 
 	}
 	stdin.Close()
 
-	w.Header().Set(goconst.HTTP_HEADER_CONTENT_TYPE, fmt.Sprintf("application/x-git-%s-result", service))
-	bufferOut := bufferPool.Get().([]byte)
-	defer bufferPool.Put(bufferOut)
-	if _, err := io.CopyBuffer(w, stdout, bufferOut); err != nil {
-		return err
+	if w != nil {
+		(*w).Header().Set(goconst.HTTP_HEADER_CONTENT_TYPE, fmt.Sprintf("application/x-git-%s-result", service))
+		bufferOut := bufferPool.Get().([]byte)
+		defer bufferPool.Put(bufferOut)
+		if _, err := io.CopyBuffer(*w, stdout, bufferOut); err != nil {
+			return err
+		}
 	}
 
 	if err = command.Wait(); err != nil {
