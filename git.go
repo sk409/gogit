@@ -44,13 +44,13 @@ func (g *Git) LsFiles(path string) ([]byte, error) {
 }
 
 func (g *Git) UploadPack(path string, args ...string) ([]byte, error) {
-	args = append([]string{rpcUploadPack}, args...)
+	args = append([]string{RPCUploadPack}, args...)
 	command := gitCommand(filepath.Join(g.RootDirectoryPath, path), g.gitBinPath, args...)
 	return command.Output()
 }
 
 func (g *Git) ReceivePack(path string, args ...string) ([]byte, error) {
-	args = append([]string{rpcReceivePack}, args...)
+	args = append([]string{RPCReceivePack}, args...)
 	command := gitCommand(filepath.Join(g.RootDirectoryPath, path), g.gitBinPath, args...)
 	return command.Output()
 }
@@ -59,7 +59,7 @@ func (g *Git) Refs(path, service string, w http.ResponseWriter) error {
 	var refs []byte
 	var err error
 	args := []string{statelessRPC, advertiseRefs, "."}
-	if service == rpcUploadPack {
+	if service == RPCUploadPack {
 		refs, err = g.UploadPack(path, args...)
 	} else {
 		refs, err = g.ReceivePack(path, args...)

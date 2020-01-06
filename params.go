@@ -7,8 +7,8 @@ var (
 )
 
 const (
-	rpcUploadPack  = "upload-pack"
-	rpcReceivePack = "receive-pack"
+	RPCUploadPack  = "upload-pack"
+	RPCReceivePack = "receive-pack"
 	statelessRPC   = "--stateless-rpc"
 	advertiseRefs  = "--advertise-refs"
 )

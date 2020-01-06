@@ -27,7 +27,7 @@ func NewHTTPServer(rootDirectoryPath, gitBinPath string) *HTTPServer {
 func (h *HTTPServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if strings.Contains(r.URL.Path, "info/refs") {
 		h.handleInfoRefs(w, r)
-	} else if strings.HasSuffix(r.URL.Path, rpcReceivePack) {
+	} else if strings.HasSuffix(r.URL.Path, RPCReceivePack) {
 		//
 		// readCloser, err := getReadCloser(r)
 		// if err != nil {
@@ -42,7 +42,7 @@ func (h *HTTPServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		// r.Body = ioutil.NopCloser(bytes.NewBuffer(requestBytes))
 		//
 		h.handleReceivePack(w, r)
-	} else if strings.HasSuffix(r.URL.Path, rpcUploadPack) {
+	} else if strings.HasSuffix(r.URL.Path, RPCUploadPack) {
 		h.handleUploadPack(w, r)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
@@ -51,10 +51,10 @@ func (h *HTTPServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (h *HTTPServer) handleInfoRefs(w http.ResponseWriter, r *http.Request) {
 	var service string
-	if strings.Contains(r.URL.RawQuery, rpcUploadPack) {
-		service = rpcUploadPack
-	} else if strings.Contains(r.URL.RawQuery, rpcReceivePack) {
-		service = rpcReceivePack
+	if strings.Contains(r.URL.RawQuery, RPCUploadPack) {
+		service = RPCUploadPack
+	} else if strings.Contains(r.URL.RawQuery, RPCReceivePack) {
+		service = RPCReceivePack
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -83,11 +83,11 @@ func (h *HTTPServer) handleInfoRefs(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *HTTPServer) handleReceivePack(w http.ResponseWriter, r *http.Request) {
-	h.handleRPC(w, r, rpcReceivePack)
+	h.handleRPC(w, r, RPCReceivePack)
 }
 
 func (h *HTTPServer) handleUploadPack(w http.ResponseWriter, r *http.Request) {
-	h.handleRPC(w, r, rpcUploadPack)
+	h.handleRPC(w, r, RPCUploadPack)
 }
 
 func (h *HTTPServer) handleRPC(w http.ResponseWriter, r *http.Request, service string) {
