@@ -96,7 +96,7 @@ func (g *Git) rpc(path, service string, w *http.ResponseWriter, r *http.Request)
 	// } else {
 	// 	body = r.Body
 	// }
-	body, err := getReadCloser(r)
+	body, err := GetReadCloser(r)
 	if err != nil {
 		return err
 	}

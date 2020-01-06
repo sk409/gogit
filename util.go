@@ -27,7 +27,7 @@ func cleanUpProcessGroup(cmd *exec.Cmd) {
 	cmd.Wait()
 }
 
-func getReadCloser(r *http.Request) (io.ReadCloser, error) {
+func GetReadCloser(r *http.Request) (io.ReadCloser, error) {
 	var body io.ReadCloser
 	var err error
 	if r.Header.Get(goconst.HTTP_HEADER_CONTENT_ENCODING) == goconst.HTTP_HEADER_CONTENT_ENCODING_GZIP {
