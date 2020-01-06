@@ -92,8 +92,8 @@ func (h *HTTPServer) handleUploadPack(w http.ResponseWriter, r *http.Request) {
 
 func (h *HTTPServer) handleRPC(w http.ResponseWriter, r *http.Request, service string) {
 	path := strings.TrimPrefix(strings.Replace(r.URL.Path, "/git-"+service, "", 1), h.PathPrefix)
-	//err := h.git.RPCWithWriter(path, service, w, r)
-	err := h.git.RPC(path, service, r)
+	err := h.git.RPCWithWriter(path, service, w, r)
+	//err := h.git.RPC(path, service, r)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
