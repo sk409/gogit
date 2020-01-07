@@ -42,8 +42,8 @@ func (g *Git) Branches(path string) ([][]byte, error) {
 	return branches, nil
 }
 
-func (g *Git) CatFile(path string, args ...string) ([]byte, error) {
-	args = append([]string{"cat-file"}, args...)
+func (g *Git) CatFile(path, sha1 string, args ...string) ([]byte, error) {
+	args = append(append([]string{"cat-file"}, args...), sha1)
 	command := gitCommand(filepath.Join(g.RootDirectoryPath, path), g.gitBinPath, args...)
 	return command.Output()
 }
