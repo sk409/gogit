@@ -109,6 +109,12 @@ func (g *Git) Refs(path, service string, w http.ResponseWriter) error {
 	return nil
 }
 
+func (g *Git) RevList(path, commit string, args ...string) ([]byte, error) {
+	args = append([]string{"rev-list", commit}, args...)
+	command := gitCommand(filepath.Join(g.RootDirectoryPath, path), g.gitBinPath, args...)
+	return command.Output()
+}
+
 func (g *Git) RPC(path, service string, r *http.Request) error {
 	return g.rpc(path, service, nil, r)
 }
