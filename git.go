@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"path/filepath"
+	"regexp"
 	"strconv"
 
 	"github.com/sk409/goconst"
@@ -20,6 +21,24 @@ func NewGit(rootDirectoryPath, gitBinPath string) *Git {
 		RootDirectoryPath: rootDirectoryPath,
 		gitBinPath:        gitBinPath,
 	}
+}
+
+func (g *Git) Branches(path string) ([][]byte, error) {
+	command := gitCommand(g.RootDirectoryPath, g.gitBinPath, "branch")
+	output, err := command.Output()
+	if err != nil {
+		return nil, err
+	}
+	regex := regexp.MustCompile("(?m)^\\* (.+)$|(?m)^(.+)$")
+	matches := regex.FindAllSubmatch(output, -1)
+	branches := [][]byte{}
+	for _, match := range matches {
+		if len(match) < 2 {
+			continue
+		}
+		branches = append(branches, match[1])
+	}
+	return branches, nil
 }
 
 func (g *Git) Clone(src, dst string) error {
@@ -39,12 +58,6 @@ func (g *Git) InitBare(path string) error {
 
 func (g *Git) LsFiles(path string) ([]byte, error) {
 	command := gitCommand(filepath.Join(g.RootDirectoryPath, path), g.gitBinPath, "ls-files")
-	return command.Output()
-}
-
-func (g *Git) UploadPack(path string, args ...string) ([]byte, error) {
-	args = append([]string{RPCUploadPack}, args...)
-	command := gitCommand(filepath.Join(g.RootDirectoryPath, path), g.gitBinPath, args...)
 	return command.Output()
 }
 
@@ -82,6 +95,12 @@ func (g *Git) RPC(path, service string, r *http.Request) error {
 
 func (g *Git) RPCWithWriter(path, service string, w http.ResponseWriter, r *http.Request) error {
 	return g.rpc(path, service, &w, r)
+}
+
+func (g *Git) UploadPack(path string, args ...string) ([]byte, error) {
+	args = append([]string{RPCUploadPack}, args...)
+	command := gitCommand(filepath.Join(g.RootDirectoryPath, path), g.gitBinPath, args...)
+	return command.Output()
 }
 
 func (g *Git) rpc(path, service string, w *http.ResponseWriter, r *http.Request) error {
