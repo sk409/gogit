@@ -64,6 +64,12 @@ func (g *Git) InitBare(path string) error {
 	return command.Run()
 }
 
+func (g *Git) Log(path string, args ...string) ([]byte, error) {
+	args = append([]string{"log"}, args...)
+	command := gitCommand(filepath.Join(g.RootDirectoryPath, path), g.gitBinPath, args...)
+	return command.Output()
+}
+
 func (g *Git) LsFiles(path string) ([]byte, error) {
 	command := gitCommand(filepath.Join(g.RootDirectoryPath, path), g.gitBinPath, "ls-files")
 	return command.Output()
