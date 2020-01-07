@@ -115,6 +115,12 @@ func (g *Git) RevList(path, commit string, args ...string) ([]byte, error) {
 	return command.Output()
 }
 
+func (g *Git) RevParse(path, commit string, args ...string) ([]byte, error) {
+	args = append([]string{"rev-parse", commit}, args...)
+	command := gitCommand(filepath.Join(g.RootDirectoryPath, path), g.gitBinPath, args...)
+	return command.Output()
+}
+
 func (g *Git) RPC(path, service string, r *http.Request) error {
 	return g.rpc(path, service, nil, r)
 }
