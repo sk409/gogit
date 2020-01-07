@@ -29,8 +29,8 @@ func (g *Git) Branches(path string) ([][]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	regex := regexp.MustCompile("(?m)^\\* (.+)$|(?m)^(.+)$")
-	//regex := regexp.MustCompile("(?m)^\\* (.+)$")
+	// regex := regexp.MustCompile("(?m)^\\* (.+)$|(?m)^(.+)$")
+	regex := regexp.MustCompile("(?m)^(.+)$")
 	matches := regex.FindAllSubmatch(output, -1)
 	branches := [][]byte{}
 	for _, match := range matches {
