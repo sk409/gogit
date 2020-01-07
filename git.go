@@ -48,8 +48,9 @@ func (g *Git) CatFile(path, sha1 string, args ...string) ([]byte, error) {
 	return command.Output()
 }
 
-func (g *Git) Clone(src, dst string) error {
-	command := gitCommand(g.RootDirectoryPath, g.gitBinPath, "clone", src, dst)
+func (g *Git) Clone(src, dst string, args ...string) error {
+	args = append(append([]string{"clone"}, args...), src, dst)
+	command := gitCommand(g.RootDirectoryPath, g.gitBinPath, args...)
 	return command.Run()
 }
 
