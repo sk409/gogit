@@ -62,6 +62,11 @@ func (g *Git) LsFiles(path string) ([]byte, error) {
 	return command.Output()
 }
 
+func (g *Git) LsTree(path string, args ...string) ([]byte, error) {
+	command := gitCommand(filepath.Join(g.RootDirectoryPath, path), g.gitBinPath, args...)
+	return command.Output()
+}
+
 func (g *Git) ReceivePack(path string, args ...string) ([]byte, error) {
 	args = append([]string{RPCReceivePack}, args...)
 	command := gitCommand(filepath.Join(g.RootDirectoryPath, path), g.gitBinPath, args...)
