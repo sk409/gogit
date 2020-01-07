@@ -1,6 +1,9 @@
 package gogit
 
 import (
+	"bytes"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -28,19 +31,19 @@ func (h *HTTPServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if strings.Contains(r.URL.Path, "info/refs") {
 		h.handleInfoRefs(w, r)
 	} else if strings.HasSuffix(r.URL.Path, RPCReceivePack) {
-		//
-		// readCloser, err := getReadCloser(r)
-		// if err != nil {
-		// 	return
-		// }
-		// requestBytes, err := ioutil.ReadAll(readCloser)
-		// if err != nil {
-		// 	return
-		// }
-		// fmt.Println("============================")
-		// fmt.Println(string(requestBytes))
-		// r.Body = ioutil.NopCloser(bytes.NewBuffer(requestBytes))
-		//
+
+		readCloser, err := GetReadCloser(r)
+		if err != nil {
+			return
+		}
+		requestBytes, err := ioutil.ReadAll(readCloser)
+		if err != nil {
+			return
+		}
+		fmt.Println("============================")
+		fmt.Println(string(requestBytes))
+		r.Body = ioutil.NopCloser(bytes.NewBuffer(requestBytes))
+
 		h.handleReceivePack(w, r)
 	} else if strings.HasSuffix(r.URL.Path, RPCUploadPack) {
 		h.handleUploadPack(w, r)
