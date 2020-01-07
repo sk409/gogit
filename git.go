@@ -63,7 +63,7 @@ func (g *Git) LsFiles(path string) ([]byte, error) {
 }
 
 func (g *Git) LsTree(path, branch string, args ...string) ([]byte, error) {
-	args = append([]string{branch}, args...)
+	args = append([]string{"ls-tree", branch}, args...)
 	command := gitCommand(filepath.Join(g.RootDirectoryPath, path), g.gitBinPath, args...)
 	return command.Output()
 }
