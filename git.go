@@ -129,6 +129,12 @@ func (g *Git) RPCWithWriter(path, service string, w http.ResponseWriter, r *http
 	return g.rpc(path, service, &w, r)
 }
 
+func (g *Git) Show(path string, args ...string) ([]byte, error) {
+	args = append([]string{"show"}, args...)
+	command := gitCommand(filepath.Join(g.RootDirectoryPath, path), g.gitBinPath, args...)
+	return command.Output()
+}
+
 func (g *Git) UploadPack(path string, args ...string) ([]byte, error) {
 	args = append([]string{RPCUploadPack}, args...)
 	command := gitCommand(filepath.Join(g.RootDirectoryPath, path), g.gitBinPath, args...)
