@@ -23,6 +23,12 @@ func NewGit(rootDirectoryPath, gitBinPath string) *Git {
 	}
 }
 
+func (g *Git) Branch(path string, args ...string) ([]byte, error) {
+	args = append([]string{"branch"}, args...)
+	command := gitCommand(filepath.Join(g.RootDirectoryPath, path), g.gitBinPath, args...)
+	return command.Output()
+}
+
 func (g *Git) Branches(path string) ([][]byte, error) {
 	command := gitCommand(filepath.Join(g.RootDirectoryPath, path), g.gitBinPath, "branch")
 	output, err := command.Output()
